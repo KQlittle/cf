@@ -2,11 +2,11 @@ FROM alpine:latest
 
 # 更新 apk 软件包索引并安装 jq、coreutils 和 openssh
 RUN apk update \
-    && apk --no-cache add jq coreutils openssh bash curl
+    && apk --no-cache add jq coreutils openssl bash curl
 
 # 查看已安装的软件包
 RUN apk info jq \
-    && apk info coreutils openssh bash curl
+    && apk info coreutils openssl bash curl
 
 # 设置工作目录
 WORKDIR /root
