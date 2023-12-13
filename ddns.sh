@@ -27,7 +27,7 @@ fi
 
 
 chmod a+x "$filename"
-source /root/config
+source /app/config
 rm -rf ip.xt
 wget -N $IP_txt
 
