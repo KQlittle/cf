@@ -15,7 +15,7 @@ WORKDIR /root
 COPY main.sh /root
 COPY ddns.sh /root
 
-RUN chmod a+x main.sh
+RUN chmod a+x main.sh ddns.sh
 
 # 定义容器启动时执行的命令
 CMD ["./main.sh"]
