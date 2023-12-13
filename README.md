@@ -8,3 +8,5 @@ docker run \
     -v $(pwd)/cfip:/opt \
     kwxos/cfaliddns:latest
 ```
+
+在/cfip目录中放入config文件
