@@ -29,7 +29,7 @@ fi
 chmod a+x "$filename"
 source /opt/config
 rm -rf ip.xt
-wget -N $IP_txt
+wget $IP_txt
 
 sed -i '/^#/d' ip.txt
 ipv4Regex="((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])";
@@ -132,10 +132,10 @@ while [[ ${x} -lt $num ]]; do
     IP2=$recordIp
     echo -e "$IP1\n$IP2" > IPlus.txt
     echo >> IPlus.txt
-    wget -N $IPbest_txt -O - >> IPlus.txt
+    wget $IPbest_txt -O - >> IPlus.txt
     sed -i '/^#/d' IPlus.txt
     echo >> IPlus.txt
-    wget -N $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
+    wget $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
     if [ "$IP_ADDR" = "ipv6" ] ; then
     #开始优选IPv6
     ./$filename $CFST_URL_R -f ipv6.txt -sl $CFST_SL -o $CFST_CSV2
