@@ -14,7 +14,6 @@ WORKDIR /root
 # 将本地环境复制到容器中
 COPY main.sh /root
 COPY ddns.sh /root
-COPY config /app
 
 RUN chmod a+x main.sh
 
