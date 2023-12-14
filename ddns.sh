@@ -21,7 +21,7 @@ else
     echo "$filename 已存在，无需下载"
 fi
 chmod a+x "$filename"
-source /root/ddns/config
+source /opt/config
 rm -rf ip.xt
 wget -N $IP_txt
 sed -i '/^#/d' ip.txt
