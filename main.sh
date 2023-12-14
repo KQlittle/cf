@@ -4,7 +4,7 @@
 chmod a+x ddns.sh
 
 # 执行 ddns.sh
-./ddns.sh >> log_file.txt
+./ddns.sh >> /opt/log_file.txt
 
 # 主循环
 while true; do
@@ -15,7 +15,7 @@ while true; do
     else
         echo "$(date): IP $IPnew 不可用，将执行IP更新..."
         # 在此处执行需要执行的脚本
-        ./ddns.sh >> log_file.txt
+        ./ddns.sh >> /opt/log_file.txt
     fi
 
     # 休眠 20 分钟
