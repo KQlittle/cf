@@ -1,10 +1,8 @@
 #!/bin/bash
 
-
-
+run(){
 # 获取系统架构
 arch=$(uname -m)
-
 # 根据架构选择文件名
 case $arch in
     x86_64) filename="CloudflareST_x86" ;;
@@ -16,22 +14,20 @@ case $arch in
         exit 1
         ;;
 esac
-
 # 下载文件（如果文件不存在）
 if [ ! -f "$filename" ]; then
     wget "https://gitee.com/wdfing/cfddns/raw/master/$filename"
 else
     echo "$filename 已存在，无需下载"
 fi
-
-
-
 chmod a+x "$filename"
-source /opt/config
+source /root/ddns/config
 rm -rf ip.xt
-wget $IP_txt
-
+wget -N $IP_txt
 sed -i '/^#/d' ip.txt
+}
+
+cf_ip_ddns(){
 ipv4Regex="((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])";
 #默认关闭小云朵
 proxy="false";
@@ -40,7 +36,7 @@ res=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${zone_id}" -H 
 resSuccess=$(echo "$res" | jq -r ".success");
 if [[ $resSuccess != "true" ]]; then
     pushmessage="登陆错误,检查cloudflare账号信息填写是否正确！"
-    source tg_push;
+    Tg_push_IP;
     exit 1;
 fi
 echo "Cloudflare账号验证成功";
@@ -132,10 +128,10 @@ while [[ ${x} -lt $num ]]; do
     IP2=$recordIp
     echo -e "$IP1\n$IP2" > IPlus.txt
     echo >> IPlus.txt
-    wget $IPbest_txt -O - >> IPlus.txt
+    wget -N $IPbest_txt -O - >> IPlus.txt
     sed -i '/^#/d' IPlus.txt
     echo >> IPlus.txt
-    wget $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
+    wget -N $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
     if [ "$IP_ADDR" = "ipv6" ] ; then
     #开始优选IPv6
     ./$filename $CFST_URL_R -f ipv6.txt -sl $CFST_SL -o $CFST_CSV2
@@ -185,9 +181,9 @@ while [[ ${x} -lt $num ]]; do
     sleep 3s;
  #会生成一个名为informlog的临时文件作为推送的内容。
 done
+}
 
-
-
+ali_ip_ddns(){
 echo "开始更新阿里域名。。。。。。"
 sleep 3;
 
@@ -287,6 +283,10 @@ else
 fi
 break
 done
+}
+
+
+Tg_push_IP(){
 pushmessage=$(cat informlog);
 echo "即将开始推送"
 sleep 3;
@@ -326,4 +326,9 @@ else
       fi
    done
 fi
+}
+run
+cf_ip_ddns
+ali_ip_ddns
+Tg_push_IP
 exit 0;
