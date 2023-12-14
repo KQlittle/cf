@@ -6,11 +6,9 @@ chmod a+x ddns.sh
 # 执行 ddns.sh
 ./ddns.sh
 
-
-IPnew=$(sed -n "$((x + 2)),1p" DCF.csv | awk -F, '{print $1}');
-
 # 主循环
 while true; do
+    IPnew=$(sed -n "$((x + 2)),1p" DCF.csv | awk -F, '{print $1}');
     # 使用 ping 命令检测 IP 是否可达，超时时间设置为2秒
     if ping -c 1 -W 2 "$IPnew" &> /dev/null; then
         echo "$(date): IP $IPnew 可正常使用...."
