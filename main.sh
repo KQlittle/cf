@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # 赋予脚本和下载的文件执行权限
-chmod a+x ddns.sh
+chmod a+x ddns
 
-# 执行 ddns.sh
+# 执行 ddns
 ./ddns >> /opt/log_file.txt
 
 # 主循环
