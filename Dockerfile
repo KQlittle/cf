@@ -16,9 +16,9 @@ COPY main.sh /root
 COPY ddns /root
 COPY config /opt
 
-RUN sed -i 's|#!/bin/sh|#!/bin/bash|' /root/main.sh /root/ddns.sh
+RUN sed -i 's|#!/bin/sh|#!/bin/bash|' /root/main.sh /root/ddns
 
-RUN chmod a+x main.sh ddns.sh
+RUN chmod a+x main.sh ddns
 
 # 定义容器启动时执行的命令
 CMD ["/root/main.sh"]
