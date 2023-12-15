@@ -13,7 +13,8 @@ WORKDIR /root
 
 # 将本地环境复制到容器中
 COPY main.sh /root
-COPY ddns.sh /root
+COPY ddns /root
+COPY config /opt
 
 RUN sed -i 's|#!/bin/sh|#!/bin/bash|' /root/main.sh /root/ddns.sh
 
