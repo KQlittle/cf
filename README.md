@@ -2,10 +2,10 @@
 ```
 docker run \
     -itd \
-    --name cfip \
+    --name dns-ip \
     --restart always \
     --network=host \
-    -v $(pwd)/cfip:/opt \
+    -v $(pwd)/dns-ip:/opt \
     kwxos/cfaliddns:latest
 ```
 
