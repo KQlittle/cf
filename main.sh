@@ -8,6 +8,11 @@ chmod a+x ddns.sh
 
 # 主循环
 while true; do
+    source /opt/config
+    DCF_file="/root/DCF.csv"
+    if [ ! -e "$DCF_file" ]; then
+    exit 0;
+    else
     IPnew=$(sed -n "$((x + 2)),1p" DCF.csv | awk -F, '{print $1}');
     # 使用 ping 命令检测 IP 是否可达，超时时间设置为2秒
     if ping -c 1 -W 2 "$IPnew" &> /dev/null; then
@@ -17,7 +22,7 @@ while true; do
         # 在此处执行需要执行的脚本
         ./ddns.sh >> /opt/ddns_log.txt
     fi
-
     # 休眠 20 分钟
-    sleep 1200
+    sleep $sltime
+    fi
 done
