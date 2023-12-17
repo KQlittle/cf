@@ -10,7 +10,7 @@ if [ ! -e "$config_file" ]; then
 #ipv6.txt在CloudflareST工具包里，下载地址：https://github.com/XIU2/CloudflareSpeedTest/releases
 IP_ADDR=ipv4
 ###################################################################################################
-#选择CF更新是否开启，ture为开启CF更新，为false将不会推送
+#选择CF更新是否开启，ture为开启CF更新，为false将不会更新
 cf=ture
 ##cloudflare配置
 #cloudflare账号邮箱
