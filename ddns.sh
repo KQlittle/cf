@@ -10,15 +10,14 @@ if [ ! -e "$config_file" ]; then
 #ipv6.txt在CloudflareST工具包里，下载地址：https://github.com/XIU2/CloudflareSpeedTest/releases
 IP_ADDR=ipv4
 ###################################################################################################
+##Cloudflare配置
 #选择CF更新是否开启，true为开启CF更新，为false将不会更新
-cf=true
+cf=false
 ##cloudflare配置
 #cloudflare账号邮箱
 x_email=xxxxx@qq.com
 #填写需要DDNS的完整域名
-#支持多域名:域名需要填写在括号中，每个域名之间用“空格”相隔。
-#例如：（cdn.test.com） 或者 （cdn1.test.com cdn2.test.com cdn3.test.com）
-hostname=(xxx.xxxx.xxx)
+hostname=xxx.xxxx.xxx
 #空间ID
 zone_id=xxxxxxxxx7d14e5152f9xxxxxxxxx
 #Global API Key
@@ -74,7 +73,7 @@ clien=3
 ###################################################################################################
 ##CloudflareST配置
 #选择测速是否开启true为开启，为false将不会测速
-CloudflareST_speed=true
+CloudflareST_speed=false
 #测速地址  
 CFST_URL=https://xxxxx.xxxxxxxxx.xxxxx
 #测速线程数量；越多测速越快，性能弱的设备 (如路由器) 请勿太高；(默认 200 最多 1000 )
@@ -96,6 +95,7 @@ CFST_CSV2=DCF.csv
 #测速端口
 CF_POST=443
 #####################################################################################################
+##TG推送配置
 #选择TG消息推送是否开启true为开启推送，为false将不会推送
 tg=false
 ##TG推送设置
@@ -108,6 +108,7 @@ telegramBotUserId=xxxxxxxxxxx
 ##TGlink设置，默认：api.telegram.org
 telegramlink=xxx.xxxxxxxx.xxxxxxx
 #####################################################################################################
+##杂项配置
 #本地IP检测，如有公网IP，需动态解析请打开此开关，与优选IP不能同时使用
 #使用此请关闭ipget和CloudflareST_speed，开启为true，关闭为false
 localIP=false
@@ -115,9 +116,13 @@ localIP=false
 ipAddr=""
 #休眠时间，1200也就是20分钟检测一次IP地址是否可用
 sltime=1200
+#是否自动安装系统软件包，true为安装false为不安装，运行需要jq curl openssl wget，尽量不自动安装，手动安装这些
+#因为各个系统环境复杂！！！！！
+packages=fasle
 #####################################################################################################
+##IP地址文件配置
 #关于是否下载CloudflareST测速工具，ip文件地址，默认必开
-ipget=true
+ipget=false
 #基本IPv4ip获取地址
 IP_txt="https://raw.gitmirror.com/XIU2/CloudflareSpeedTest/master/ip.txt"
 #基本IPv6地址
@@ -208,7 +213,7 @@ if [ "$CloudflareST_speed" = "false" ] ; then
 	echo "按要求未进行CFIP测速";
 else
 if [ "$cf" = "true" ] ; then
-    CFIPget=${hostname[$x]};
+    CFIPget=$hostname;
     listDnsipget="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=${record_type}&name=${CFIPget}";
     res234=$(curl -s -X GET "$listDnsipget" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json");
     CFIP2=$(echo "$res234" | jq -r ".result[0].content");
@@ -293,7 +298,7 @@ if [ "$cf" = "false" ] ; then
 	echo "按要求未进行CF-IP推送";
 else
 echo "开始更新CF域名......";
-CDNhostname=${hostname[$x]};
+CDNhostname=$hostname;
 listDnsApi="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=${record_type}&name=${CDNhostname}";
 createDnsApi="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records";
 res=$(curl -s -X GET "$listDnsApi" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json");
