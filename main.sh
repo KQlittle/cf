@@ -23,6 +23,7 @@ while true; do
         ./ddns.sh >> /opt/ddns_log.txt
     fi
     # 休眠 20 分钟
-    sleep $sltime
     fi
+    echo -e "休眠：$sltime秒"
+    sleep $sltime
 done
