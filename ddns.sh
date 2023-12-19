@@ -535,16 +535,15 @@ while true; do
     source /opt/config
     DCF_file="/root/DCF.csv"
     if [ ! -e "$DCF_file" ]; then
-    echo -e "未检测到$DCF_file文件，检查配置是否正确，将退出！！！" /opt/ddns_log.txt
-    exit 0;
+    echo -e "未检测到$DCF_file文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/ddns_log.txt
+    echo -e "配置文件填写完成后，请手动重启！！！" >> /opt/ddns_log.txt
+    sleep 600
     else
     IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}');
-    # 使用 ping 命令检测 IP 是否可达，超时时间设置为2秒
     if ping -c 1 -W 2 "$IPnew" &> /dev/null; then
         echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/ddns_log.txt
     else
         echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/ddns_log.txt
-        # 在此处执行需要执行的脚本
         {
         run
         closeset
@@ -556,7 +555,6 @@ while true; do
         Tg_push_IP
         } >> /opt/ddns_log.txt
     fi
-    # 休眠 20 分钟
     fi
     echo -e "休眠：$sltime秒" >> /opt/ddns_log.txt
     sleep $sltime
