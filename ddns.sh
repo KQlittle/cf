@@ -4,7 +4,7 @@ config_file="/opt/config"
 if [ ! -e "$config_file" ]; then
   cat > /opt/config << EOF
 #!/bin/bash
-###################################################################################################
+##################################静雨·安蝉>>blog.kwxos.top#########################################
 ##运行模式ipv4 or ipv6 默认为：ipv4
 #指定工作模式为ipv4还是ipv6。如果为ipv6，请在文件夹下添加ipv6.txt
 #ipv6.txt在CloudflareST工具包里，下载地址：https://github.com/XIU2/CloudflareSpeedTest/releases
@@ -126,7 +126,7 @@ IP_txt="https://raw.gitmirror.com/XIU2/CloudflareSpeedTest/master/ip.txt"
 IPv6_txt="https://raw.gitmirror.com/XIU2/CloudflareSpeedTest/master/ipv6.txt"
 #优选IPv4ip获取地址如:https://xxxxxxxxxxxxxxxxxx/main/best-ip.txt
 IPbest_txt=""
-#优选IPv4ip网页获取地址如:https://xxxxxxxxxx/ipv4.php
+#优选IPv4ip网页获取地址如:https://xxxxxxxxxx/ipv4.php，如果出错请留空
 IPbest_txt2=""
 EOF
 echo "请修改文件后,重新启动"
@@ -228,13 +228,13 @@ send_request() {
     local params="$2"
     local args="AccessKeyId=$AliDDNS_AK&Action=$action&Format=json&$params&Version=2015-01-09"
     local hash=$(echo -n "GET&%2F&$(urlencode "$args")" | openssl dgst -sha1 -hmac "$AliDDNS_SK&" -binary | openssl base64)
-    curl -s "https://alidns.cn-hangzhou.aliyuncs.com/?$args&Signatrue=$(urlencode "$hash")"
+    curl -s "https://alidns.cn-hangzhou.aliyuncs.com/?$args&Signature=$(urlencode "$hash")"
 }
 get_ip() {
     grep '"Value"' | jq -r '.DomainRecords.Record[].Value'
 }
 query_recordid() {
-    send_request "DescribeSubDomainRecords&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatrueMethod=HMAC-SHA1&SignatrueNonce=$timestamp&SignatrueVersion=1.0&SubDomain=$AliDDNS_SubDomainName.$AliDDNS_DomainName&Timestamp=$timestamp&Type=$record_type"
+    send_request "DescribeSubDomainRecords&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatureMethod=HMAC-SHA1&SignatureNonce=$timestamp&SignatureVersion=1.0&SubDomain=$AliDDNS_SubDomainName.$AliDDNS_DomainName&Timestamp=$timestamp&Type=$record_type"
 }
     timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
     AliIP2=`query_recordid A | get_ip`
@@ -342,11 +342,11 @@ if [ "$ali" = "false" ] ; then
 else
     echo "开始更新ali域名......"
     sleep 3
-eqold6=0
-eqold4=0
-ALiDom="$AliDDNS_SubDomainName.$AliDDNS_DomainName"
-AliDDNS_LocalIP4=$ipAddr
-AliDDNS_LocalIP6=$ipAddr
+    eqold6=0
+    eqold4=0
+    ALiDom="$AliDDNS_SubDomainName.$AliDDNS_DomainName"
+    AliDDNS_LocalIP4=$ipAddr
+    AliDDNS_LocalIP6=$ipAddr
 urlencode() {
     local string="$1"
     echo -n "$string" | jq -s -R -r @uri
@@ -356,7 +356,7 @@ send_request() {
     local params="$2"
     local args="AccessKeyId=$AliDDNS_AK&Action=$action&Format=json&$params&Version=2015-01-09"
     local hash=$(echo -n "GET&%2F&$(urlencode "$args")" | openssl dgst -sha1 -hmac "$AliDDNS_SK&" -binary | openssl base64)
-    curl -s "https://alidns.cn-hangzhou.aliyuncs.com/?$args&Signatrue=$(urlencode "$hash")"
+    curl -s "https://alidns.cn-hangzhou.aliyuncs.com/?$args&Signature=$(urlencode "$hash")"
 }
 get_recordid() {
     grep -Eo '"RecordId":"[0-9]+"' | cut -d':' -f2 | tr -d '"'
@@ -365,13 +365,13 @@ get_ip() {
     grep '"Value"' | jq -r '.DomainRecords.Record[].Value'
 }
 query_recordid() {
-    send_request "DescribeSubDomainRecords&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatrueMethod=HMAC-SHA1&SignatrueNonce=$timestamp&SignatrueVersion=1.0&SubDomain=$ALiDom&Timestamp=$timestamp&Type=$record_type"
+    send_request "DescribeSubDomainRecords&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatureMethod=HMAC-SHA1&SignatureNonce=$timestamp&SignatureVersion=1.0&SubDomain=$ALiDom&Timestamp=$timestamp&Type=$record_type"
 }
 update_record() {
-    send_request "UpdateDomainRecord&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&RecordId=$3&SignatrueMethod=HMAC-SHA1&SignatrueNonce=$timestamp&SignatrueVersion=1.0&TTL=$AliDDNS_TTL&Timestamp=$timestamp&Type=$record_type&Value=$(urlencode "$2")"
+    send_request "UpdateDomainRecord&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&RecordId=$3&SignatureMethod=HMAC-SHA1&SignatureNonce=$timestamp&SignatureVersion=1.0&TTL=$AliDDNS_TTL&Timestamp=$timestamp&Type=$record_type&Value=$(urlencode "$2")"
 }
 add_record() {
-    send_request "AddDomainRecord&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatrueMethod=HMAC-SHA1&SignatrueNonce=$timestamp&SignatrueVersion=1.0&TTL=$AliDDNS_TTL&Timestamp=$timestamp&Type=$record_type&Value=$(urlencode "$2")"
+    send_request "AddDomainRecord&DomainName=$AliDDNS_DomainName" "RR=$AliDDNS_SubDomainName&SignatureMethod=HMAC-SHA1&SignatureNonce=$timestamp&SignatureVersion=1.0&TTL=$AliDDNS_TTL&Timestamp=$timestamp&Type=$record_type&Value=$(urlencode "$2")"
 }
 if [ "$record_type" = "A" ]
 then
@@ -410,6 +410,7 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
    else
        newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
    fi
+   
     timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
     Ali_newip=`query_recordid A | get_ip`
    if [ "$Ali_newip" != "$AliDDNS_LocalIP4" ]; then
@@ -426,6 +427,7 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
    then
        AliDDNS_RecordID6=`query_recordid AAAA | get_recordid`
    fi
+   
    if [ "$AliDDNS_RecordID6" = "" ]
    then
        AliDDNS_RecordID6=`add_record AAAA $AliDDNS_LocalIP6 | get_recordid`
@@ -533,7 +535,7 @@ while true; do
     source /opt/config
     DCF_file="/root/DCF.csv"
     if [ ! -e "$DCF_file" ]; then
-    echo -e "未检测到$DCF_file文件，检查配置是否正确，将退出！！！"
+    echo -e "未检测到$DCF_file文件，检查配置是否正确，将退出！！！" /opt/ddns_log.txt
     exit 0;
     else
     IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}');
@@ -556,6 +558,6 @@ while true; do
     fi
     # 休眠 20 分钟
     fi
-    echo -e "休眠：$sltime秒"
+    echo -e "休眠：$sltime秒" >> /opt/ddns_log.txt
     sleep $sltime
 done
