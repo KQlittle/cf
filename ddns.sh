@@ -64,13 +64,6 @@ ID="xxxxxx"
 # 设置DNSpod的token
 TOKEN="xxxxxxxxxxxxxxxxxxxxx"
 ###################################################################################################
-##openwrt科学上网插件配置
-#优选节点时是否自动停止科学上网服务 true=自动停止 false=不停止 默认为 true
-pause=false
-#填写openwrt使用的是哪个科学上网客户端，填写对应的“数字”  默认为 1  客户端为passwall
-# 1=passwall 2=passwall2 3=ShadowSocksR Plus+ 4=clash 5=openclash 6=bypass
-clien=3
-###################################################################################################
 ##CloudflareST配置
 #选择测速是否开启true为开启，为false将不会测速
 CloudflareST_speed=false
@@ -112,9 +105,9 @@ telegramlink=xxx.xxxxxxxx.xxxxxxx
 #本地IP检测，如有公网IP，需动态解析请打开此开关，与优选IP不能同时使用
 #使用此请关闭ipget和CloudflareST_speed，开启为true，关闭为false
 localIP=false
-#如果不开ipget，就指定需要更新到DNS平台的ip，如ipAddr=1.1.1.1
-ipAddr=""
-#休眠时间，1200也就是20分钟检测一次IP地址是否可用
+#如果不开ipget，就指定需要更新到DNS平台的ip，如ipAddr520=1.1.1.1
+ipAddr520=""
+#休眠时间，1200也就是20分钟检测一次IP地址是否可用，当localIP开启时将指定时间检测本地IP是否变化
 sltime=1200
 #####################################################################################################
 ##IP地址文件配置
@@ -171,38 +164,6 @@ sed -i '/^#/d' IPlus.txt
 echo >> IPlus.txt
 wget -q $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
 sed -i '/^#/d' ip.txt
-fi
-}
-closeset(){
-if  [ "$clien" = "6" ] ; then
-	CLIEN=bypass;
-elif  [ "$clien" = "5" ] ; then
-		CLIEN=openclash;
-elif  [ "$clien" = "4" ] ; then
-	CLIEN=clash;
-elif  [ "$clien" = "3" ] ; then
-		CLIEN=shadowsocksr;
-elif  [ "$clien" = "2" ] ; then
-			CLIEN=passwall2;
-			else
-			CLIEN=passwall;
-fi
-if [ "$pause" = "false" ] ; then
-	echo "按要求未停止科学上网服务";
-else
-	/etc/init.d/$CLIEN stop;
-	echo "已停止$CLIEN";
-fi
-}
-openset(){
-if [ "$pause" = "false" ] ; then
-		echo "按要求未重启科学上网服务";
-		sleep 3s;
-else
-		/etc/init.d/$CLIEN restart;
-		echo "已重启$CLIEN";
-		echo "为保证cloudflareAPI连接正常 将在30秒后开始更新域名解析";
-		sleep 3s;
 fi
 }
 cf_ip_speed(){
@@ -520,42 +481,69 @@ fi
 fi
 }
 
+if [ -z "$ipAddr520" ]; then
 {
     run
-    closeset
     cf_ip_speed
-    openset
+    local_ch
     cf_ip_ddns
     ali_ip_ddns
     dnspod_ip_ddns
     Tg_push_IP
 } >> /opt/ddns_log.txt
-
+else
+ipAddr=$ipAddr520
+{
+    cf_ip_ddns
+    ali_ip_ddns
+    dnspod_ip_ddns
+    Tg_push_IP
+} >> /opt/ddns_log.txt
+exit 0;
+fi
 while true; do
     source /opt/config
-    DCF_file="/root/DCF.csv"
-    if [ ! -e "$DCF_file" ]; then
-    echo -e "未检测到$DCF_file文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/ddns_log.txt
-    echo -e "配置文件填写完成后，请手动重启！！！" >> /opt/ddns_log.txt
-    sleep 600
+    if [ "$localIP" = "true" ] ; then
+        ipAddr1=$(curl -s http://ip.3322.net)
+        if [ "$ipAddr" = "$ipAddr1" ] ; then
+            echo -e "$(date): 本地IP与公网IP相同..." >> /opt/ddns_log.txt
+        else
+            if [ -z "$ipAddr" ]; then
+                echo -e "$(date): 本地IP为空，请检查网络配置..." >> /opt/ddns_log.txt
+            else
+                echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> /opt/ddns_log.txt
+                {
+                    local_ch
+                    cf_ip_ddns
+                    ali_ip_ddns
+                    dnspod_ip_ddns
+                    Tg_push_IP
+                } >> /opt/ddns_log.txt
+            fi
+        fi
     else
-    IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}');
-    if ping -c 1 -W 2 "$IPnew" &> /dev/null; then
-        echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/ddns_log.txt
-    else
-        echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/ddns_log.txt
-        {
-        run
-        closeset
-        cf_ip_speed
-        openset
-        cf_ip_ddns
-        ali_ip_ddns
-        dnspod_ip_ddns
-        Tg_push_IP
-        } >> /opt/ddns_log.txt
-    fi
+        DCF_file="/root/DCF.csv"
+        if [ ! -e "$DCF_file" ]; then
+	    echo -e "未检测到$DCF_file文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/ddns_log.txt
+	    echo -e "配置文件填写完成后，请手动重启！！！" >> /opt/ddns_log.txt
+	    sleep 600
+        else
+            IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}')
+            if ping -c 4 -W 2 "$IPnew" &> /dev/null; then
+                echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/ddns_log.txt
+            else
+                echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/ddns_log.txt
+                {
+                    run
+                    cf_ip_speed
+                    cf_ip_ddns
+                    ali_ip_ddns
+                    dnspod_ip_ddns
+                    Tg_push_IP
+                } >> /opt/ddns_log.txt
+            fi
+        fi
     fi
     echo -e "休眠：$sltime秒" >> /opt/ddns_log.txt
-    sleep $sltime
+    sleep "$sltime"
 done
