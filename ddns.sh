@@ -524,7 +524,7 @@ while true; do
     else
         DCF_file="/root/DCF.csv"
         if [ ! -e "$DCF_file" ]; then
-	    echo -e "未检测到$DCF_file文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/ddns_log.txt
+	    echo -e "未检测到测速后的文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/ddns_log.txt
 	    echo -e "配置文件填写完成后，请手动重启！！！" >> /opt/ddns_log.txt
 	    sleep 600
         else
