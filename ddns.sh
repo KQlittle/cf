@@ -572,99 +572,90 @@ fi
 }
 
 if [ -z "$ipAddr520" ]; then
-    {
-        run
-        closeset
-        cf_ip_speed
-        local_ch
-        openset
-        cf_ip_ddns
-        ali_ip_ddns
-        dnspod_ip_ddns
-        Tg_push_IP
-    } >> ddns_log.txt
-    echo -e "休眠：$sltime秒" >> ddns_log.txt
-    sleep "$sltime"
+{
+    run
+    cf_ip_speed
+    local_ch
+    cf_ip_ddns
+    ali_ip_ddns
+    dnspod_ip_ddns
+    Tg_push_IP
+} >> /opt/$(date +"%Y%m%d")_ddns_log.txt
 else
-    ipAddr=$ipAddr520
-    {
-        cf_ip_ddns
-        ali_ip_ddns
-        dnspod_ip_ddns
-        Tg_push_IP
-    } >> ddns_log.txt
-    exit 0;
+ipAddr=$ipAddr520
+{
+    cf_ip_ddns
+    ali_ip_ddns
+    dnspod_ip_ddns
+    Tg_push_IP
+} >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+exit 0;
 fi
 if [ "$numip" = "1" ] ; then
-    while true; do
-        source config
-        if [ "$localIP" = "true" ] ; then
-            ipAddr1=$(curl -s http://ip.3322.net)
-            if [ "$ipAddr" = "$ipAddr1" ] ; then
-                echo -e "$(date): 本地IP与公网IP相同..." >> ddns_log.txt
-            else
-                if [ -z "$ipAddr" ]; then
-                    echo -e "$(date): 本地IP为空，请检查网络配置..." >> ddns_log.txt
-                else
-                    echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> ddns_log.txt
-                    {
-    		    rm -rf informlog
-                        local_ch
-                        cf_ip_ddns
-                        ali_ip_ddns
-                        dnspod_ip_ddns
-                        Tg_push_IP
-                    } >> ddns_log.txt
-                fi
-            fi
+while true; do
+    source /opt/config
+    if [ "$localIP" = "true" ] ; then
+        ipAddr1=$(curl -s http://ip.3322.net)
+        if [ "$ipAddr" = "$ipAddr1" ] ; then
+            echo -e "$(date): 本地IP与公网IP相同..." >> /opt/$(date +"%Y%m%d")_ddns_log.txt
         else
-            DCF_file="DCF.csv"
-            if [ ! -e "$DCF_file" ]; then
-                echo -e "未检测到 $DCF_file 文件，检查配置是否正确，将退出！！！" >> ddns_log.txt
-                exit 0
+            if [ -z "$ipAddr" ]; then
+                echo -e "$(date): 本地IP为空，请检查网络配置..." >> /opt/$(date +"%Y%m%d")_ddns_log.txt
             else
-                IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}')
-                if ping -c 4 -W 2 "$IPnew" &> /dev/null; then
-                    echo -e "$(date): IP $IPnew 可正常使用...." >> ddns_log.txt
-                else
-                    echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> ddns_log.txt
-                    {
-    		            rm -rf ip.txt ipv6.txt informlog
-                        run
-                        closeset
-                        cf_ip_speed
-                        openset
-                        cf_ip_ddns
-                        ali_ip_ddns
-                        dnspod_ip_ddns
-                        Tg_push_IP
-                    } >> ddns_log.txt
-                fi
+                echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+                {
+		    rm -rf ip.txt ipv6.txt informlog
+                    local_ch 
+                    cf_ip_ddns
+                    ali_ip_ddns
+                    dnspod_ip_ddns
+                    Tg_push_IP
+                } >> /opt/$(date +"%Y%m%d")_ddns_log.txt
             fi
         fi
-        echo -e "休眠：$sltime秒" >> ddns_log.txt
-        sleep "$sltime"
-    done
+    else
+        DCF_file="/root/DCF.csv"
+        if [ ! -e "$DCF_file" ]; then
+	    echo -e "未检测到测速后的文件，检查配置是否正确，将休眠10分钟，请手动暂停容器！！！" >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+	    echo -e "配置文件填写完成后，请手动重启！！！" >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+	    sleep 600
+        else
+            IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}')
+            if ping -c 4 -W 2 "$IPnew" &> /dev/null; then
+                echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+            else
+                echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+                {
+		    rm -rf ip.txt ipv6.txt informlog
+                    run
+                    cf_ip_speed
+                    cf_ip_ddns
+                    ali_ip_ddns
+                    dnspod_ip_ddns
+                    Tg_push_IP
+                } >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+            fi
+        fi
+    fi
+    echo -e "休眠：$sltime秒" >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+    sleep "$sltime"
+done
 else
     while true; do
         result_file=result.csv
         if [ ! -e "$result_file" ]; then
-            echo -e "未检测到 $result_file 文件，检查配置是否正确，将退出！！！" >> ddns_log.txt
+            echo -e "未检测到 $result_file 文件，检查配置是否正确，将退出！！！" >> /opt/$(date +"%Y%m%d")_ddns_log.txt
             exit 0
         else
+	echo -e "休眠：$sltime秒" >> /opt/$(date +"%Y%m%d")_ddns_log.txt
+        sleep "$sltime"
         {
             rm -rf ip.txt ipv6.txt informlog
             run
-            closeset
             cf_ip_speed
-            openset
             cf_ip_ddns
-            ali_ip_ddns
-            dnspod_ip_ddns
             Tg_push_IP
-        } >> ddns_log.txt
-        echo -e "休眠：$sltime秒" >> ddns_log.txt
-        sleep "$sltime"
+        } >> /opt/$(date +"%Y%m%d")_ddns_log.txt
         fi
     done
 fi
