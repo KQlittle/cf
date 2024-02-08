@@ -355,7 +355,7 @@ else
     for ((i = 0; i < $existingRecordsCount; i++)); do
     delete_id=$(echo "$record_ids" | sed -n "$((i + 1))p")
     deleteDnsApi="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${delete_id}"
-    deleteres=curl -s -X DELETE "$deleteDnsApi" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json"
+    deleteres=$(curl -s -X DELETE "$deleteDnsApi" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json")
     done
     for ((i = 0; i <= $numip; i++)); do
         numh=2+i
