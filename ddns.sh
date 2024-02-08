@@ -622,20 +622,20 @@ while true; do
 	    sleep 600
         else
             IPnew=$(sed -n "$((x + 2)),1p" "$DCF_file" | awk -F, '{print $1}')
-            if ping -c 4 -W 2 "$IPnew" &> /dev/null; then
-                echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
-            else
-                echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
-                {
-		    rm -rf ip.txt ipv6.txt informlog
-                    run
-                    cf_ip_speed
-                    cf_ip_ddns
-                    ali_ip_ddns
-                    dnspod_ip_ddns
-                    Tg_push_IP
-                } >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
-            fi
+            if nc -zv -w 2 "$IPnew" "$CF_POST" &> /dev/null; then
+    		echo -e "$(date): IP $IPnew 可正常使用...." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
+	    else
+    		echo -e "$(date): IP $IPnew 不可用，将执行IP更新..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
+		    {
+		        rm -rf ip.txt ipv6.txt informlog
+		        run
+		        cf_ip_speed
+		        cf_ip_ddns
+		        ali_ip_ddns
+		        dnspod_ip_ddns
+		        Tg_push_IP
+		    } >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
+	    fi
         fi
     fi
     echo -e "休眠：$sltime秒" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
