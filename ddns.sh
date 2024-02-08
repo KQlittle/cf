@@ -6,6 +6,10 @@ if [ ! -e "$config_file" ]; then
   cat > /opt/config << EOF
 #!/bin/bash
 ##################################静雨·安蝉>>blog.kwxos.top#########################################
+## 4.2 
+## 推送可选IP数量到cloudflare，暂时只支持CF，且不支持IP可用性检测
+## 修复代码运行bug和逻辑
+###################################################################################################
 ##运行模式ipv4 or ipv6 默认为：ipv4
 #指定工作模式为ipv4还是ipv6
 IP_ADDR=ipv4
@@ -175,7 +179,7 @@ fi
 fi
 }
 if [ "$numip" > "$CFST_DN" ] ; then
-    CFST_DN=$numip
+    CFST_DN=$((numip + 3))
 fi
 cf_ip_speed(){
 if [ "$CloudflareST_speed" = "false" ] ; then
@@ -351,7 +355,7 @@ else
     for ((i = 0; i < $existingRecordsCount; i++)); do
     delete_id=$(echo "$record_ids" | sed -n "$((i + 1))p")
     deleteDnsApi="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${delete_id}"
-    curl -s -X DELETE "$deleteDnsApi" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json"
+    deleteres=curl -s -X DELETE "$deleteDnsApi" -H "X-Auth-Email:$x_email" -H "X-Auth-Key:$api_key" -H "Content-Type:application/json"
     done
     for ((i = 0; i <= $numip; i++)); do
         numh=2+i
