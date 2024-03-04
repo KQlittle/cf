@@ -578,7 +578,6 @@ if [ -z "$ipAddr520" ]; then
 {
     run
     cf_ip_speed
-    local_ch
     cf_ip_ddns
     ali_ip_ddns
     dnspod_ip_ddns
@@ -608,7 +607,6 @@ while true; do
                 echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
                 {
 		    rm -rf ip.txt ipv6.txt informlog
-                    local_ch 
                     cf_ip_ddns
                     ali_ip_ddns
                     dnspod_ip_ddns
