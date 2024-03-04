@@ -132,7 +132,7 @@ IPbest_txt=""
 IPbest_txt2=""
 EOF
 echo "请修改文件后,重新启动"
-exit 0;
+tail -f /dev/null
 else
     echo "config文件已存在"
 fi
