@@ -131,10 +131,10 @@ IPbest_txt=""
 #优选IPv4ip网页获取地址如:https://xxxxxxxxxx/ipv4.php，如果出错请留空
 IPbest_txt2=""
 EOF
-echo "请修改文件后,重新启动"
+echo "请修改文件后,重新启动" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
 tail -f /dev/null
 else
-    echo "config文件已存在"
+    echo "config文件已存在" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
 fi
 source /opt/config
 if [ "$localIP" = "true" ]; then
