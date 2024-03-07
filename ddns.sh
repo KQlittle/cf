@@ -597,7 +597,7 @@ if [ "$numip" = "1" ] ; then
 while true; do
     source /opt/config
     if [ "$localIP" = "true" ] ; then
-        ipAddr1=$(curl -s http://ip.3322.net)
+        ipAddr1=$(curl -s https://ip.kwxos.pp.ua)
         if [ "$ipAddr" = "$ipAddr1" ] ; then
             echo -e "$(date): 本地IP与公网IP相同..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
         else
