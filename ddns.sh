@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -rf ip.txt ipv6.txt informlog
-mkdir /opt/ddns_log
+mkdir -p /opt/ddns_log
 config_file="/opt/config"
 if [ ! -e "$config_file" ]; then
   cat > /opt/config << EOF
