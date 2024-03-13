@@ -606,6 +606,7 @@ while true; do
             else
                 echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
                 {
+		    ipAddr = "$ipAddr1"
 		    rm -rf ip.txt ipv6.txt informlog
                     cf_ip_ddns
                     ali_ip_ddns
