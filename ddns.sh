@@ -114,6 +114,8 @@ telegramlink=xxx.xxxxxxxx.xxxxxxx
 #本地IP检测，如有公网IP，需动态解析请打开此开关，与优选IP不能同时使用
 #使用此请关闭ipget和CloudflareST_speed，开启为true，关闭为false
 localIP=false
+##本地ip获取API，默认链接http://ip.3322.net
+locallink="http://ip.3322.net"
 #如果不开ipget，就指定需要更新到DNS平台的ip，如ipAddr520=1.1.1.1
 ipAddr520=""
 #休眠时间，1200也就是20分钟检测一次IP地址是否可用，当localIP开启时将指定时间检测本地IP是否变化
@@ -137,8 +139,14 @@ else
     echo "config文件已存在" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
 fi
 source /opt/config
+
+if [ -z "$locallink" ]; then
+    locallink="http://ip.3322.net"
+else
+
+
 if [ "$localIP" = "true" ]; then
-ipAddr=`curl -s http://ip.3322.net`
+ipAddr=$(curl -s $locallink)
 fi
 if [ "$IP_ADDR" = "ipv4" ] ; then
     record_type="A"
@@ -167,14 +175,22 @@ else
 fi
 chmod a+x "$filename"
 if [ "$IP_ADDR" = "ipv4" ] ; then
+if [ -n "$IP_txt" ]; then
 wget -q $IP_txt -O - > ip.txt
+sed -i '/^#/d' ip.txt
+fi
+if [ -n "$IPbest_txt" ]; then
 wget -q $IPbest_txt -O - > IPlus.txt
 sed -i '/^#/d' IPlus.txt
+fi
 echo >> IPlus.txt
+if [ -n "$IPbest_txt2" ]; then
 wget -q $IPbest_txt2 -O - | sed 's/<br>/\n/g' >> IPlus.txt
-sed -i '/^#/d' ip.txt
+fi
 else
+if [ -n "$IPv6_txt" ]; then
 wget -q $IPv6_txt
+fi
 fi
 fi
 }
@@ -597,7 +613,7 @@ if [ "$numip" = "1" ] ; then
 while true; do
     source /opt/config
     if [ "$localIP" = "true" ] ; then
-        ipAddr1=$(curl -s http://ip.3322.net)
+        ipAddr1=$(curl -s $locallink)
         if [ "$ipAddr" = "$ipAddr1" ] ; then
             echo -e "$(date): 本地IP与公网IP相同..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
         else
