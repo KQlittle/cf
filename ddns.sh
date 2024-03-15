@@ -142,9 +142,7 @@ source /opt/config
 
 if [ -z "$locallink" ]; then
     locallink="http://ip.3322.net"
-else
-
-
+fi
 if [ "$localIP" = "true" ]; then
 ipAddr=$(curl -s $locallink)
 fi
