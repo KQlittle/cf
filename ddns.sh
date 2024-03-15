@@ -139,11 +139,10 @@ else
     echo "config文件已存在" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
 fi
 source /opt/config
-
+if [ "$localIP" = "true" ]; then
 if [ -z "$locallink" ]; then
     locallink="http://ip.3322.net"
 fi
-if [ "$localIP" = "true" ]; then
 ipAddr=$(curl -s $locallink)
 fi
 if [ "$IP_ADDR" = "ipv4" ] ; then
