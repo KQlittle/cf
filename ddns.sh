@@ -433,7 +433,7 @@ send_request() {
     curl -s "https://alidns.cn-hangzhou.aliyuncs.com/?$args&Signature=$(urlencode "$hash")"
 }
 get_recordid() {
-    grep -Eo '"RecordId":"[0-9]+"' | cut -d':' -f2 | tr -d '"'
+    grep '"RecordId"' | jq -r '.DomainRecords.Record[].RecordId'
 }
 get_ip() {
     grep '"Value"' | jq -r '.DomainRecords.Record[].Value'
@@ -477,8 +477,7 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
    if [ "$AliDDNS_RecordID4" = "" ]
    then
        AliDDNS_RecordID4=`query_recordid A | get_recordid`
-       sleep 2;
-  	 if [ -z "$AliDDNS_DomainIP4" ]; then
+  	 if [ -z "$AliDDNS_RecordID4" ]; then
 	       AliDDNS_RecordID4=`add_record A $AliDDNS_LocalIP4 | get_recordid`
 	  else
 	       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
