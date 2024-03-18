@@ -140,12 +140,6 @@ else
     echo "config文件已存在" >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
 fi
 source /opt/config
-if [ "$localIP" = "true" ]; then
-if [ -z "$locallink" ]; then
-    locallink="http://ip.3322.net"
-fi
-ipAddr=$(curl -s $locallink)
-fi
 if [ "$IP_ADDR" = "ipv4" ] ; then
     record_type="A"
 else
@@ -285,6 +279,12 @@ if [ "$cf" = "false" ] ; then
 	echo "按要求未进行CF-IP推送";
 else
 echo "开始更新CF域名......";
+if [ "$localIP" = "true" ]; then
+if [ -z "$locallink" ]; then
+    locallink="http://ip.3322.net"
+fi
+ipAddr=$(curl -s $locallink)
+fi
 CDNhostname=$hostname;
 if [ "$numip" = 1 ] ; then
 listDnsApi="https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=${record_type}&name=${CDNhostname}";
@@ -409,6 +409,12 @@ if [ "$ali" = "false" ] ; then
     echo "按要求未进行ali推送"
 else
     echo "开始更新ali域名......"
+if [ "$localIP" = "true" ]; then
+if [ -z "$locallink" ]; then
+locallink="http://ip.3322.net"
+fi
+ipAddr=$(curl -s $locallink)
+fi
     sleep 3
     eqold6=0
     eqold4=0
@@ -520,6 +526,12 @@ if [ "$DNSpod" = "false" ] ; then
     echo "按要求未进行dnspod推送"
 else
 echo "开始更新DNSpod域名......"
+if [ "$localIP" = "true" ]; then
+if [ -z "$locallink" ]; then
+    locallink="http://ip.3322.net"
+fi
+ipAddr=$(curl -s $locallink)
+fi
 sleep 3;
 if [ "$sub_domain" = "@" ];then
 	HOST=$domain
@@ -620,8 +632,7 @@ while true; do
             else
                 echo -e "$(date): 本地IP与公网IP不同，将执行IP更新..." >> /opt/ddns_log/$(date +"%Y-%m-%d").txt
                 {
-		    ipAddr = "$ipAddr1"
-		    rm -rf ip.txt ipv6.txt informlog
+		    rm -rf informlog
                     cf_ip_ddns
                     ali_ip_ddns
                     dnspod_ip_ddns
