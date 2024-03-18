@@ -477,7 +477,8 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
    if [ "$AliDDNS_RecordID4" = "" ]
    then
        AliDDNS_RecordID4=`query_recordid A | get_recordid`
-          if [ "$AliDDNS_RecordID4" != "" ]
+       sleep 2;
+	  if [ "$AliDDNS_RecordID4" != "" ]
 	   then
 	       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
 	  else
