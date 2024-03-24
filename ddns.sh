@@ -483,13 +483,13 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
        	  if [ -z "$AliDDNS_RecordID4" ]; then
 	       timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
 	       AliDDNS_RecordID4=`query_recordid A | get_recordid_back`
-	  	 if [ -z "$AliDDNS_RecordID4" ]; then
-		       AliDDNS_RecordID4=`add_record A $AliDDNS_LocalIP4 | get_recordid`
-		  else
-		       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
-		  fi
     	  fi
    fi
+ if [ -z "$AliDDNS_RecordID4" ]; then
+       AliDDNS_RecordID4=`add_record A $AliDDNS_LocalIP4 | get_recordid`
+  else
+       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
+  fi
     timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
     Ali_newip=`query_recordid A | get_ip`
    if [ "$Ali_newip" != "$AliDDNS_LocalIP4" ]; then
