@@ -435,6 +435,9 @@ send_request() {
 get_recordid() {
     grep '"RecordId"' | jq -r '.DomainRecords.Record[].RecordId'
 }
+get_recordid_back() {
+    grep -Eo '"RecordId":"[0-9]+"' | cut -d':' -f2 | tr -d '"'
+}
 get_ip() {
     grep '"Value"' | jq -r '.DomainRecords.Record[].Value'
 }
@@ -477,11 +480,15 @@ timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
    if [ "$AliDDNS_RecordID4" = "" ]
    then
        AliDDNS_RecordID4=`query_recordid A | get_recordid`
-  	 if [ -z "$AliDDNS_RecordID4" ]; then
-	       AliDDNS_RecordID4=`add_record A $AliDDNS_LocalIP4 | get_recordid`
-	  else
-	       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
-	  fi
+       	  if [ -z "$AliDDNS_RecordID4" ]; then
+	       timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
+	       AliDDNS_RecordID4=`query_recordid A | get_recordid_back`
+	  	 if [ -z "$AliDDNS_RecordID4" ]; then
+		       AliDDNS_RecordID4=`add_record A $AliDDNS_LocalIP4 | get_recordid`
+		  else
+		       newA=`update_record A $AliDDNS_LocalIP4 $AliDDNS_RecordID4`
+		  fi
+    	  fi
    fi
     timestamp=`date -u "+%Y-%m-%dT%H%%3A%M%%3A%SZ"`
     Ali_newip=`query_recordid A | get_ip`
