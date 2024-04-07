@@ -566,43 +566,32 @@ fi
 fi
 }
 Tg_push_IP(){
-if [ "$tg" = "false" ] ; then
-	echo "按要求未进行tg推送";
-else
-pushmessage=$(cat informlog) > /dev/null;
-echo "即将开始推送"
-sleep 3;
-[ "$telegramlink" = "" ] && telegramlink=api.telegram.org
-echo $pushmessage
-message_text=$pushmessage
-URL="https://${telegramlink}/bot${telegramBotToken}/sendMessage"
-if [[ -z ${telegramBotToken} ]]; then
-   echo "未配置 TG 推送"
-else
-   retry_count=0
-   while true; do
-      res=$(timeout 20s curl -s -X POST $URL -d chat_id=${telegramBotUserId} -d text="${message_text}")
-      if [ $? == 124 ]; then
-         echo 'TG API 请求超时，请检查网络是否重启完成并是否能够访问 TG'          
-         exit 1
-      fi
-      resSuccess521=$(echo "$res" | jq -r ".ok")
-      if [[ $resSuccess521 = "true" ]]; then
-         echo "TG 推送成功"
-         break
-      else
-         ((retry_count++))
-         if [ $retry_count -ge 5 ]; then
-            echo "TG 推送失败，已重试 $retry_count 次，请检查 TG 机器人 token 和 ID"
-            exit 1
-         else
-            echo "TG 推送失败，正在进行第 $retry_count 次重试..."
-            sleep 2
-         fi
-      fi
-   done
-fi
-fi
+    if [ "$tg" = "false" ]; then
+        echo "按要求未进行tg推送"
+    else
+        pushmessage=$(cat informlog)
+        echo "即将开始推送"
+        sleep 3
+        [ "$telegramlink" = "" ] && telegramlink=api.telegram.org
+        echo $pushmessage
+        message_text=$pushmessage
+        URL="https://${telegramlink}/bot${telegramBotToken}/sendMessage"
+        if [[ -z ${telegramBotToken} ]]; then
+            echo "未配置 TG 推送"
+        else
+            res=$(timeout 20s curl -s -X POST $URL -d chat_id=${telegramBotUserId} -d text="${message_text}")
+            if [ $? == 124 ]; then
+                echo 'TG API 请求超时，请检查网络是否重启完成并是否能够访问 TG'          
+            else
+                resSuccess521=$(echo "$res" | jq -r ".ok")
+                if [[ $resSuccess521 = "true" ]]; then
+                    echo "TG 推送成功"
+                else
+                    echo "TG 推送失败，请检查 TG 机器人 token 和 ID"
+                fi
+            fi
+        fi
+    fi
 }
 
 if [ -z "$ipAddr520" ]; then
